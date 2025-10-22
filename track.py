@@ -1,20 +1,24 @@
 class Track:
-    def __init__(self, fuel_per_100km_per_trailer: float, trailers_count: int):
-        self.fuel_consumption = fuel_per_100km_per_trailer * trailers_count
-        self.fuel = 0.0
+    def __init__(self, fuel_consumption_per_100km_per_trailer: float, trailers: int):
+        if fuel_consumption_per_100km_per_trailer <= 0 or trailers < 0:
+            raise ValueError("Invalid input values for consumption or trailers")
+        self.consumption_per_trailer = fuel_consumption_per_100km_per_trailer
+        self.trailers = trailers
+        self.fuel = 0
 
-    def fill_up(self, liters: float):
-        if liters < 0:
-            raise ValueError("Fuel amount cannot be negative")
-        self.fuel += liters
+    def fill_up(self, amount: float):
+        if amount <= 0:
+            raise ValueError("Amount of fuel must be positive")
+        self.fuel += amount
 
     def drive(self, distance_km: float):
-        if distance_km < 0:
-            raise ValueError("Distance cannot be negative")
-        needed = self.fuel_consumption * distance_km / 100
-        if needed > self.fuel:
+        if distance_km <= 0:
+            raise ValueError("Distance must be positive")
+        total_consumption = self.consumption_per_trailer * self.trailers
+        fuel_needed = (distance_km / 100) * total_consumption
+        if fuel_needed > self.fuel:
             raise ValueError("Not enough fuel to drive this distance")
-        self.fuel -= needed
+        self.fuel -= fuel_needed
 
-    def remaining_fuel(self) -> float:
+    def remaining_fuel(self):
         return round(self.fuel, 2)
